@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -14,16 +15,16 @@ import java.util.Vector;
 public class Main {
 
 
-    public static Vector readGraph(String addr) {
+    public static Vector<Vector<int[]>> readGraph(String addr, int n) {
         Vector<Vector<int[]>> graph = new Vector<Vector<int[]>>();
-        int n = 0;//nodes’number
+        // int n = 0;//nodes’number
         for (int i = 0; i < n; i++) {
             graph.add(new Vector<int[]>());
         }
         BufferedReader br = null;
         String line = "";
         try {
-            br = new BufferedReader(new FileReader("network.txt"));
+            br = new BufferedReader(new FileReader(addr));
             line = br.readLine();
             while (line != null) {
                 String[] parts = line.split(" ");
@@ -92,22 +93,21 @@ public class Main {
     public static void main(String[] args) {
 
 
-        Vector<Vector<int[]>> graph = readGraph("network.txt");
+        Vector<Vector<int[]>> graph = readGraph("network.txt", 100);
         int n = graph.size();
         double[][] featurePair = new double[n * (n - 1) / 2][3];
-        int cnt = 0;
+        double[][] featurePair2 = new double[n * (n - 1) / 2][3];
+        int cnt = 0;//pair index
         for (int i = 0; i < n; i++) {
             for (int j = i + 1; j < n; j++) {
                 if (hasArc(graph, i, j)) {
                     featurePair[0][cnt] = 1;
                 }
-                ArrayList arrayList = comNeighbors(graph, i, j);
+                ArrayList<Integer> arrayList = comNeighbors(graph, i, j);
                 featurePair[1][cnt] = arrayList.size();
                 featurePair[2][cnt] = commonEdgedInSet(graph, arrayList);
-
-
+                cnt++;
             }
-            cnt++;
         }
 
         int sumF1 = 0;
@@ -119,9 +119,9 @@ public class Main {
             sumF3 += featurePair[2][1];
         }
         for (int i = 0; i < n * (n - 1) / 2; i++) {
-            featurePair[0][i] = featurePair[0][i] / sumF1;
-            featurePair[1][i] = featurePair[1][i] / sumF2;
-            featurePair[2][i] = featurePair[2][i] / sumF3;
+            featurePair2[0][i] = featurePair[0][i] / sumF1;
+            featurePair2[1][i] = featurePair[1][i] / sumF2;
+            featurePair2[2][i] = featurePair[2][i] / sumF3;
         }
 
         double FE1 = 0;
@@ -129,15 +129,61 @@ public class Main {
         double FE3 = 0;
 
         for (int i = 0; i < n * (n - 1) / 2; i++) {
-            FE1 += featurePair[0][i] * Math.log(featurePair[0][i]);
-            FE2 += featurePair[1][i] * Math.log(featurePair[1][i]);
-            FE3 += featurePair[2][i] * Math.log(featurePair[2][i]);
+            FE1 += featurePair2[0][i] * Math.log(featurePair2[0][i]);
+            FE2 += featurePair2[1][i] * Math.log(featurePair2[1][i]);
+            FE3 += featurePair2[2][i] * Math.log(featurePair2[2][i]);
         }
         FE1 *= -1;
         FE2 *= -1;
         FE3 *= -1;
         double w1 = FE1 / FE2;
         double w2 = FE1 / FE3;
+
+        double[][] pw = new double[n][n];
+        int cnt2 = 0;//pair index
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+
+                pw[i][j] = featurePair[0][cnt2];
+
+                // ArrayList<Integer> com = comNeighbors(graph, i, j);
+                pw[i][j] += featurePair[1][cnt2] * w1;
+                // int comNedges = commonEdgedInSet(graph, com);
+                pw[i][j] += featurePair[2][cnt2] * w2;
+                pw[j][i] = pw[i][j];
+                cnt2++;
+            }
+        }
+        int[] labels = new int[n];
+        for (int i = 0; i < labels.length; i++) {
+            labels[i] = i;
+        }
+        boolean changed = true;
+        while (changed) {
+            changed = false;
+            for (int i = 0; i < n; i++) {
+                int[] labelScore = new int[n];
+                HashSet<Integer> neighbors = neighbors(graph, i);
+                Iterator<Integer> iterator = neighbors.iterator();
+                while (iterator.hasNext()) {
+                    int d = iterator.next();
+                    labelScore[labels[d]] += pw[i][d];
+                }
+                int maxAmount = 0;
+                int maxLabel = labels[i];
+                for (int i1 = 0; i1 < labelScore.length; i1++) {
+                    if (labelScore[i1] > maxAmount) {
+                        maxAmount = labelScore[i1];
+                        maxLabel = i1;
+                        changed = true;
+                    }
+                }
+                labels[i] = maxLabel;
+
+            }
+
+
+        }
 
 
 
