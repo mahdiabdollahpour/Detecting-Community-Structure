@@ -2,10 +2,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Created by ASUS on 31/05/2018.
@@ -94,6 +91,7 @@ public class Main {
 
 
         Vector<Vector<int[]>> graph = readGraph("N1000MU.5\\network.txt", 1000);
+        // Vector<Vector<int[]>> graph = readGraph("mine.txt", 8);
         int n = graph.size();
         double[][] featurePair = new double[3][n * (n - 1) / 2];
         double[][] featurePair2 = new double[3][n * (n - 1) / 2];
@@ -109,6 +107,8 @@ public class Main {
                 cnt++;
             }
         }
+        System.out.println("CNT : " + cnt);
+
 
         int sumF1 = 0;
         int sumF2 = 0;
@@ -123,16 +123,16 @@ public class Main {
             featurePair2[1][i] = featurePair[1][i] / sumF2;
             featurePair2[2][i] = featurePair[2][i] / sumF3;
         }
-        for (int i = 0; i < n * (n - 1) / 2; i++) {
-            System.out.print(featurePair2[0][i]);
+        for (int i = 0; i < n * (n - 1) / 2 && i < 30; i++) {
+            System.out.print(featurePair2[0][i] + " , ");
         }
         System.out.println();
-        for (int i = 0; i < n * (n - 1) / 2; i++) {
-            System.out.print(featurePair2[1][i]);
+        for (int i = 0; i < n * (n - 1) / 2 && i < 30; i++) {
+            System.out.print(featurePair2[1][i] + " , ");
         }
         System.out.println();
-        for (int i = 0; i < n * (n - 1) / 2; i++) {
-            System.out.print(featurePair2[2][i]);
+        for (int i = 0; i < n * (n - 1) / 2 && i < 30; i++) {
+            System.out.print(featurePair2[2][i] + " , ");
         }
         System.out.println();
 
@@ -168,6 +168,8 @@ public class Main {
         System.out.println(FE3);
         double w1 = FE1 / FE2;
         double w2 = FE1 / FE3;
+//        w1 = 1;
+//        w2 = 1;
         System.out.println(w1);
         System.out.println(w2);
 
@@ -186,19 +188,20 @@ public class Main {
                 cnt2++;
             }
         }
-//        for (int i = 0; i < n; i++) {
-//            for (int j = i + 1; j < n; j++) {
-//                System.out.print(pw[i][j] + " , ");
-//            }
-//            System.out.println();
-//        }
+        System.out.println("CNT 2 : " + cnt2);
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                System.out.print("for " + i + " & " + j + " : " + pw[i][j] + " , ");
+            }
+            System.out.println();
+        }
         int[] labels = new int[n];
         int[] orders = new int[n];
         for (int i = 0; i < labels.length; i++) {
             labels[i] = i;
             orders[i] = i;
         }
-        final int allPases = 3;
+        final int allPases = 50;
         int num_passes = 0;
         boolean changed = true;
         while (changed && num_passes < allPases) {
@@ -212,38 +215,56 @@ public class Main {
                 int[] labelScore = new int[n];
                 for (int d = 0; d < n; d++) {
                     if (d != i) {
-                        labelScore[labels[d]] += pw[i][d];
+                        labelScore[labels[d]] += pw[d][i];
                     }
                     //  System.out.println("the value : " + pw[i][d]);
                 }
 
 
                 int maxAmount = labelScore[labels[i]];
-                int maxLabel = labels[i];
+                ArrayList<Integer> maxLabels = new ArrayList<>();
+                //  int maxLabel = labels[i];
                 for (int i1 = 0; i1 < labelScore.length; i1++) {
                     if (labelScore[i1] > maxAmount) {
                         // System.out.println("diff : " + (labelScore[i1] - maxAmount));
                         maxAmount = labelScore[i1];
-                        maxLabel = i1;
-                        changed = true;
+                        maxLabels = new ArrayList<>();
+                        maxLabels.add(i1);
+                        //  maxLabel = i1;
+                        //   changed = true;
                         //      System.out.println("hi");
+                    } else if (labelScore[i1] == maxAmount) {
+                        maxLabels.add(i1);
+                        //   changed = true;
                     }
                 }
-                System.out.println(num_passes + ". label of " + i + " goes from " + labels[i] + " to " + maxLabel);
-                newLabels[i] = maxLabel;
+                if (!maxLabels.contains(labels[i])) {
+                    newLabels[i] = maxLabels.get((int) (Math.random() * maxLabels.size()));
+                    //  labels[i] = newLabels[i];// just testing it in this way => bad thing to do
+                    changed = true;
+                } else {
+                    changed = false;
+                }
+                System.out.println(num_passes + ". label of " + (i + 1) + " goes from " + (labels[i] + 1) + " to " + (newLabels[i] + 1));
 
             }
             labels = newLabels;
-
-
         }
-        printC0mms(labels);
+        printComms(labels);
+
+        Vector<Integer> v = new Vector(Arrays.asList(labels));
+        v.add(0, 0);
+        try {
+            System.out.println(NMI(v, "N1000MU.5\\community.txt"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
-    static void printC0mms(int[] labels) {
+    static void printComms(int[] labels) {
         for (int i = 0; i < labels.length; i++) {
-            System.out.println(i + " : " + labels[i]);
+            System.out.println(i + " : " + (labels[i] + 1));
         }
     }
 
@@ -255,6 +276,71 @@ public class Main {
             input[i] = temp;
         }
         return input;
+    }
+
+    public static float NMI(Vector<Integer> Prediction, String TrueCommunityPathTXT) throws Exception {
+        Vector<Integer> TrueLabel = new Vector<Integer>();
+        Prediction.clear();
+        Prediction.add(1);
+        int countGuess = 0, countGold = 0;
+        float NMI = 0, up = 0, down = 0;
+        int n = 0;
+        TrueLabel.add(0);
+        BufferedReader br = new BufferedReader(new FileReader(TrueCommunityPathTXT));
+        String line = br.readLine();
+        while (line != null) {
+            String[] parts = line.split(" ");
+            int node = Integer.parseInt(parts[0]);
+            int label = Integer.parseInt(parts[1]);
+            TrueLabel.add(label);
+            Prediction.add(label * 2);
+            n++;
+            line = br.readLine();
+        }
+        br.close();
+        if (n != Prediction.size() - 1)
+            return -1;
+        Hashtable<Integer, Integer> temp = new Hashtable<Integer, Integer>();
+        int k = 1;
+        for (int i = 1; i <= n; i++) {
+            if (temp.containsKey((Integer) Prediction.get(i)))
+                Prediction.set(i, temp.get(Prediction.get(i)));
+            else {
+                temp.put(Prediction.get(i), k);
+                Prediction.set(i, temp.get(Prediction.get(i)));
+                k++;
+            }
+        }
+        for (int i = 1; i <= n; i++) {
+            if (Prediction.get(i) > countGuess)
+                countGuess = Prediction.get(i);
+            if (TrueLabel.get(i) > countGold)
+                countGold = TrueLabel.get(i);
+        }
+        float NRow[] = new float[countGold];
+        float NCol[] = new float[countGuess];
+        float matrix[][] = new float[countGold][countGuess];
+        for (int i = 0; i < countGold; i++)
+            matrix[i] = new float[countGuess];
+        for (int i = 1; i <= n; i++) {
+            matrix[TrueLabel.get(i) - 1][Prediction.get(i) - 1]++;
+            NRow[TrueLabel.get(i) - 1]++;
+            NCol[Prediction.get(i) - 1]++;
+        }
+
+        for (int i = 0; i < countGold; i++)
+            if (NRow[i] != 0)
+                down += NRow[i] * Math.log(NRow[i] / (float) (n));
+        for (int i = 0; i < countGuess; i++)
+            if (NCol[i] != 0)
+                down += NCol[i] * Math.log(NCol[i] / (float) (n));
+        for (int i = 0; i < countGold; i++)
+            for (int j = 0; j < countGuess; j++)
+                if (matrix[i][j] != 0)
+                    up += matrix[i][j] * Math.log((matrix[i][j] * (float) (n) / ((NRow[i] * NCol[j]))));
+        up *= (float) -2;
+        NMI = up / down;
+        return NMI;
     }
 
 
