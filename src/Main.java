@@ -3,6 +3,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Created by ASUS on 31/05/2018.
@@ -28,7 +29,7 @@ public class Main {
                 int source = Integer.parseInt(parts[0]) - 1;
                 int destination = Integer.parseInt(parts[1]) - 1;
                 ((graph.get(source))).add(new int[]{destination, 0});
-                ((graph.get(destination))).add(new int[]{source, 0});
+                //     ((graph.get(destination))).add(new int[]{source, 0});
                 line = br.readLine();
             }
         } catch (FileNotFoundException e) {
@@ -51,6 +52,18 @@ public class Main {
 
     }
 
+    public static void chapGraph(Vector<Vector<int[]>> graph) {
+        for (int i = 0; i < graph.size(); i++) {
+            Vector<int[]> v = graph.get(i);
+            System.out.print((i + 1) + " has edges to :");
+            for (int i1 = 0; i1 < v.size(); i1++) {
+                System.out.print((v.get(i1)[0] + 1) + " , ");
+            }
+            System.out.println();
+            System.out.println("---------------");
+        }
+    }
+
     public static HashSet<Integer> neighbors(Vector<Vector<int[]>> graph, int i) {
         HashSet<Integer> hashSet = new HashSet<>();
         Vector<int[]> v = graph.get(i);
@@ -58,6 +71,7 @@ public class Main {
             int[] a = v.get(i1);
             hashSet.add(a[0]);
         }
+        //  System.out.println("neghibor of : " + (i + 1) + " are " + hashSet);
         return hashSet;
     }
 
@@ -67,9 +81,14 @@ public class Main {
         Vector<int[]> v = graph.get(i);
         for (int i1 = 0; i1 < v.size(); i1++) {
             int[] a = v.get(i1);
-            if (h2.contains(a[0])) ;
-            arrayList.add(a[0]);
+            //    System.out.println(a[0]);
+            if (h2.contains(a[0])) {
+                if (!arrayList.contains(a[0])) {
+                    arrayList.add(a[0]);
+                }
+            }
         }
+        System.out.println("common neighbors of " + (i + 1) + " and " + (j + 1) + " are " + arrayList);
         return arrayList;
     }
 
@@ -77,21 +96,22 @@ public class Main {
         int count = 0;
         for (int i = 0; i < arrayList.size(); i++) {
             for (int j = i + 1; j < arrayList.size(); j++) {
-                if (hasArc(graph, i, j)) {
+                if (hasArc(graph, arrayList.get(i), arrayList.get(j))) {
+                    System.out.println("we have arc from " + (arrayList.get(i) + 1) + " to " + (arrayList.get(j) + 1));
                     count++;
                 }
             }
         }
+        System.out.println("edges in " + arrayList + " are " + count);
         return count;
-
-
     }
 
     public static void main(String[] args) {
 
 
-        Vector<Vector<int[]>> graph = readGraph("N1000MU.5\\network.txt", 1000);
-        // Vector<Vector<int[]>> graph = readGraph("mine.txt", 8);
+        //Vector<Vector<int[]>> graph = readGraph("N1000MU.5\\network.txt", 1000);
+        Vector<Vector<int[]>> graph = readGraph("mine.txt", 8);
+        chapGraph(graph);
         int n = graph.size();
         double[][] featurePair = new double[3][n * (n - 1) / 2];
         double[][] featurePair2 = new double[3][n * (n - 1) / 2];
@@ -101,9 +121,14 @@ public class Main {
                 if (hasArc(graph, i, j)) {
                     featurePair[0][cnt] = 1;
                 }
+
                 ArrayList<Integer> arrayList = comNeighbors(graph, i, j);
                 featurePair[1][cnt] = arrayList.size();
                 featurePair[2][cnt] = commonEdgedInSet(graph, arrayList);
+                System.out.println("for " + (i + 1) + " , " + (j + 1));
+                System.out.println(featurePair[0][cnt]);
+                System.out.println(featurePair[1][cnt]);
+                System.out.println(featurePair[2][cnt]);
                 cnt++;
             }
         }
@@ -121,8 +146,16 @@ public class Main {
         for (int i = 0; i < n * (n - 1) / 2; i++) {
             featurePair2[0][i] = featurePair[0][i] / sumF1;
             featurePair2[1][i] = featurePair[1][i] / sumF2;
-            featurePair2[2][i] = featurePair[2][i] / sumF3;
+            if (sumF3 != 0) {
+                featurePair2[2][i] = featurePair[2][i] / sumF3;
+            }
         }
+        System.out.println("SUMF3 :" + sumF3);
+
+        for (int i = 0; i < n * (n - 1) / 2 && i < 30; i++) {
+            System.out.print(featurePair[2][i] + " , ");
+        }
+        System.out.println();
         for (int i = 0; i < n * (n - 1) / 2 && i < 30; i++) {
             System.out.print(featurePair2[0][i] + " , ");
         }
@@ -163,15 +196,26 @@ public class Main {
         FE1 *= -1;
         FE2 *= -1;
         FE3 *= -1;
-        System.out.println(FE1);
-        System.out.println(FE2);
-        System.out.println(FE3);
-        double w1 = FE1 / FE2;
-        double w2 = FE1 / FE3;
-//        w1 = 1;
-//        w2 = 1;
-        System.out.println(w1);
-        System.out.println(w2);
+        System.out.println("FE 1 : " + FE1);
+        System.out.println("FE 2 : " + FE2);
+        System.out.println("FE 3 : " + FE3);
+        double w1;
+        if (FE2 == 0) {
+            w1 = Math.abs(FE1) * (100000 / FE1);
+        } else {
+
+            w1 = FE1 / FE2;
+        }
+        double w2;
+        if (FE3 == 0) {
+            w2 = Math.abs(FE1) * (100000 / FE1);
+        } else {
+            w2 = FE1 / FE3;
+        }
+        w1 = 1;
+        w2 = 1;
+        System.out.println("w1 : " + w1);
+        System.out.println("w2 : " + w2);
 
         double[][] pw = new double[n][n];
         int cnt2 = 0;//pair index
@@ -191,7 +235,7 @@ public class Main {
         System.out.println("CNT 2 : " + cnt2);
         for (int i = 0; i < n; i++) {
             for (int j = i + 1; j < n; j++) {
-                System.out.print("for " + i + " & " + j + " : " + pw[i][j] + " , ");
+                System.out.print("for " + (i + 1) + " & " + (j + 1) + " : " + pw[i][j] + " , ");
             }
             System.out.println();
         }
@@ -208,10 +252,14 @@ public class Main {
             orders = random_shuffle(orders);
             num_passes++;
             changed = false;
-            int[] newLabels = new int[n];
+            //    int[] newLabels = new int[n];
+            //   boolean[] skipThis = new boolean[n];
             for (int counter = 0; counter < n; counter++) {
                 int i = orders[counter];
-
+//                if (skipThis[i]) {
+//                    continue;
+//                }
+//                skipThis[i] = true;
                 int[] labelScore = new int[n];
                 for (int d = 0; d < n; d++) {
                     if (d != i) {
@@ -238,24 +286,33 @@ public class Main {
                         //   changed = true;
                     }
                 }
-                if (!maxLabels.contains(labels[i])) {
-                    newLabels[i] = maxLabels.get((int) (Math.random() * maxLabels.size()));
+                int old = 0;
+            //    if (!maxLabels.contains(labels[i])) {
+                    old = labels[i];
+                    labels[i] = maxLabels.get((int) (Math.random() * maxLabels.size()));
                     //  labels[i] = newLabels[i];// just testing it in this way => bad thing to do
                     changed = true;
-                } else {
-                    changed = false;
-                }
-                System.out.println(num_passes + ". label of " + (i + 1) + " goes from " + (labels[i] + 1) + " to " + (newLabels[i] + 1));
+                    System.out.println(num_passes + ". label of " + (i + 1) + " goes from " + (old + 1) + " to " + (labels[i] + 1));
+              //  } else {
+
+                    System.out.println(num_passes + ". label of " + (i + 1) + " stays " + (labels[i] + 1));
+               // }
+//                for (int j = 0; j < n; j++) {
+//                    if (labels[j] == newLabels[i]) {
+//                        skipThis[j] = true;
+//                    }
+//                }
+
 
             }
-            labels = newLabels;
+            //  labels = newLabels.clone();
         }
         printComms(labels);
 
         Vector<Integer> v = new Vector(Arrays.asList(labels));
         v.add(0, 0);
         try {
-            System.out.println(NMI(v, "N1000MU.5\\community.txt"));
+            //      System.out.println(NMI(v, "N1000MU.5\\community.txt"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -264,7 +321,7 @@ public class Main {
 
     static void printComms(int[] labels) {
         for (int i = 0; i < labels.length; i++) {
-            System.out.println(i + " : " + (labels[i] + 1));
+            System.out.println((i + 1) + " : " + (labels[i] + 1));
         }
     }
 
