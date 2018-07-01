@@ -11,7 +11,8 @@ import java.util.function.Consumer;
 
 
 public class Main {
-
+    static String address = "N1000MU.5";
+    static int size = 1000;
 
     public static Vector<Vector<int[]>> readGraph(String addr, int n) {
         Vector<Vector<int[]>> graph = new Vector<Vector<int[]>>();
@@ -109,12 +110,12 @@ public class Main {
     public static void main(String[] args) {
 
 
-        Vector<Vector<int[]>> graph = readGraph("N1000MU.45\\network.txt", 1000);
+        Vector<Vector<int[]>> graph = readGraph(address + "\\network.txt", size);
         //     Vector<Vector<int[]>> graph = readGraph("mine.txt", 8);
         chapGraph(graph);
         int n = graph.size();
-        double[][] featurePair = new double[3][n * (n - 1) / 2];
-        double[][] featurePair2 = new double[3][n * (n - 1) / 2];
+        float[][] featurePair = new float[3][n * (n - 1) / 2];
+        float[][] featurePair2 = new float[3][n * (n - 1) / 2];
         int cnt = 0;//pair index
         for (int i = 0; i < n; i++) {
             for (int j = i + 1; j < n; j++) {
@@ -309,10 +310,14 @@ public class Main {
         }
         printComms(labels);
 
-        Vector<Integer> v = new Vector(Arrays.asList(labels));
+        Vector<Integer> v = new Vector<>();
+        //new Vector(Arrays.asList(labels));
         v.add(0, 0);
+        for (int i = 0; i < labels.length; i++) {
+            v.add(labels[i]);
+        }
         try {
-            System.out.println(NMI(v, "N1000MU.45\\community.txt"));
+            System.out.println(NMI(v, address + "\\community.txt"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -337,8 +342,6 @@ public class Main {
 
     public static float NMI(Vector<Integer> Prediction, String TrueCommunityPathTXT) throws Exception {
         Vector<Integer> TrueLabel = new Vector<Integer>();
-        Prediction.clear();
-        Prediction.add(1);
         int countGuess = 0, countGold = 0;
         float NMI = 0, up = 0, down = 0;
         int n = 0;
@@ -347,16 +350,16 @@ public class Main {
         String line = br.readLine();
         while (line != null) {
             String[] parts = line.split(" ");
-            int node = Integer.parseInt(parts[0]);
-            int label = Integer.parseInt(parts[1]);
-            TrueLabel.add(label);
-            Prediction.add(label * 2);
+            TrueLabel.add(Integer.parseInt(parts[1]));
             n++;
             line = br.readLine();
         }
         br.close();
-        if (n != Prediction.size() - 1)
+        if (n != Prediction.size() - 1) {
+            System.out.println("size does not macth");
+            System.out.println(Prediction.size() + " , " + n);
             return -1;
+        }
         Hashtable<Integer, Integer> temp = new Hashtable<Integer, Integer>();
         int k = 1;
         for (int i = 1; i <= n; i++) {
@@ -384,7 +387,6 @@ public class Main {
             NRow[TrueLabel.get(i) - 1]++;
             NCol[Prediction.get(i) - 1]++;
         }
-
         for (int i = 0; i < countGold; i++)
             if (NRow[i] != 0)
                 down += NRow[i] * Math.log(NRow[i] / (float) (n));
