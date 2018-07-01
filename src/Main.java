@@ -109,8 +109,8 @@ public class Main {
     public static void main(String[] args) {
 
 
-        //Vector<Vector<int[]>> graph = readGraph("N1000MU.5\\network.txt", 1000);
-        Vector<Vector<int[]>> graph = readGraph("mine.txt", 8);
+        Vector<Vector<int[]>> graph = readGraph("N1000MU.45\\network.txt", 1000);
+        //     Vector<Vector<int[]>> graph = readGraph("mine.txt", 8);
         chapGraph(graph);
         int n = graph.size();
         double[][] featurePair = new double[3][n * (n - 1) / 2];
@@ -212,8 +212,8 @@ public class Main {
         } else {
             w2 = FE1 / FE3;
         }
-        w1 = 1;
-        w2 = 1;
+        //     w1 = 1;
+        //     w2 = 1;
         System.out.println("w1 : " + w1);
         System.out.println("w2 : " + w2);
 
@@ -245,7 +245,7 @@ public class Main {
             labels[i] = i;
             orders[i] = i;
         }
-        final int allPases = 50;
+        final int allPases = 150;
         int num_passes = 0;
         boolean changed = true;
         while (changed && num_passes < allPases) {
@@ -287,16 +287,16 @@ public class Main {
                     }
                 }
                 int old = 0;
-            //    if (!maxLabels.contains(labels[i])) {
+                if (!maxLabels.contains(labels[i])) {
                     old = labels[i];
                     labels[i] = maxLabels.get((int) (Math.random() * maxLabels.size()));
                     //  labels[i] = newLabels[i];// just testing it in this way => bad thing to do
                     changed = true;
                     System.out.println(num_passes + ". label of " + (i + 1) + " goes from " + (old + 1) + " to " + (labels[i] + 1));
-              //  } else {
+                } else {
 
                     System.out.println(num_passes + ". label of " + (i + 1) + " stays " + (labels[i] + 1));
-               // }
+                }
 //                for (int j = 0; j < n; j++) {
 //                    if (labels[j] == newLabels[i]) {
 //                        skipThis[j] = true;
@@ -312,7 +312,7 @@ public class Main {
         Vector<Integer> v = new Vector(Arrays.asList(labels));
         v.add(0, 0);
         try {
-            //      System.out.println(NMI(v, "N1000MU.5\\community.txt"));
+            System.out.println(NMI(v, "N1000MU.45\\community.txt"));
         } catch (Exception e) {
             e.printStackTrace();
         }
