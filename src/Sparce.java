@@ -63,12 +63,12 @@ public class Sparce {
                 // featurePair[1][cnt] = arrayList.size();
                 if (arrayList.size() != 0) {
                     f2.addEntry(i, j, arrayList.size());
-                }
-                // featurePair[2][cnt] = Main.commonEdgedInSet(graph, arrayList);
-                int a = Main.commonEdgedInSet(graph, arrayList);
-                if (a != 0) {
+                    // featurePair[2][cnt] = Main.commonEdgedInSet(graph, arrayList);
+                    int a = Main.commonEdgedInSet(graph, arrayList);
+                    if (a != 0) {
 
-                    f3.addEntry(i, j, a);
+                        f3.addEntry(i, j, a);
+                    }
                 }
 //                System.out.println("for " + (i + 1) + " , " + (j + 1));
 //                System.out.println(featurePair[0][cnt]);
