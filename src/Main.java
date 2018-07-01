@@ -11,8 +11,8 @@ import java.util.function.Consumer;
 
 
 public class Main {
-    static String address = "N1000MU.5";
-    static int size = 1000;
+    static String address = "N100000MU.5";
+    static int size = 100000;
 
     public static Vector<Vector<int[]>> readGraph(String addr, int n) {
         Vector<Vector<int[]>> graph = new Vector<Vector<int[]>>();
@@ -25,14 +25,22 @@ public class Main {
         try {
             br = new BufferedReader(new FileReader(addr));
             line = br.readLine();
+//            System.out.println(br.lines().count());
+            int cnt = 0;
             while (line != null) {
+                System.out.println(line);
                 String[] parts = line.split(" ");
                 int source = Integer.parseInt(parts[0]) - 1;
                 int destination = Integer.parseInt(parts[1]) - 1;
                 ((graph.get(source))).add(new int[]{destination, 0});
+                cnt++;
                 //     ((graph.get(destination))).add(new int[]{source, 0});
                 line = br.readLine();
             }
+            System.out.println(n);
+            System.out.println(cnt);
+
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -112,7 +120,9 @@ public class Main {
 
         Vector<Vector<int[]>> graph = readGraph(address + "\\network.txt", size);
         //     Vector<Vector<int[]>> graph = readGraph("mine.txt", 8);
+
         chapGraph(graph);
+        System.gc();
         int n = graph.size();
         float[][] featurePair = new float[3][n * (n - 1) / 2];
         float[][] featurePair2 = new float[3][n * (n - 1) / 2];
@@ -351,6 +361,7 @@ public class Main {
         while (line != null) {
             String[] parts = line.split(" ");
             TrueLabel.add(Integer.parseInt(parts[1]));
+            System.out.println(n);
             n++;
             line = br.readLine();
         }
