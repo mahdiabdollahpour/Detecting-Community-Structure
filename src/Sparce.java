@@ -12,8 +12,8 @@ import java.util.*;
 public class Sparce {
 
 
-    static String address = "N1000MU.5";
-    static int size = 1000;
+    static String address = "N100000MU.5";
+    static int size = 100000;
     //    static ArrayList<node> feature1Pair;
 //    static ArrayList<node> feature2Pair;
 //    static ArrayList<node> feature3Pair;

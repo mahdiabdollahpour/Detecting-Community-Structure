@@ -58,26 +58,24 @@ public class SparceMateix {
         if (s == -1) {
             return 0;
         }
-//        while (s <= e) {
-////            System.out.println("S :" + s + " E :" + e);
-////            System.out.println("Sd :" + matrix.get(s).d + " Ed :" + matrix.get(e).d);
-//            int mid = (e + s) / 2;
-//            int v = matrix.get(mid).d;
-//            if (v == j) {
-//                return matrix.get(mid).value;
-//            } else if (matrix.get(mid + 1).d == j) {
-//                return matrix.get(mid + 1).value;
-//            } else if (j < v) {
-//                e = mid;
-//            } else {
-//                s = mid;
-//            }
-//        }
-        for (int k = s; k <= e; k++) {
-            if (matrix.get(k).d == j) {
-                return matrix.get(k).value;
+        while (s <= e) {
+//            System.out.println("S :" + s + " E :" + e);
+//            System.out.println("Sd :" + matrix.get(s).d + " Ed :" + matrix.get(e).d);
+            int mid = (e + s) / 2;
+            int v = matrix.get(mid).d;
+            if (v == j) {
+                return matrix.get(mid).value;
+            } else if (j < v) {
+                e = mid - 1;
+            } else {
+                s = mid + 1;
             }
         }
+//        for (int k = s; k <= e; k++) {
+//            if (matrix.get(k).d == j) {
+//                return matrix.get(k).value;
+//            }
+//        }
         return 0;
     }
 
