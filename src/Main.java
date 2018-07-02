@@ -80,7 +80,6 @@ public class Main {
             int[] a = v.get(i1);
             hashSet.add(a[0]);
         }
-        //  System.out.println("neghibor of : " + (i + 1) + " are " + hashSet);
         return hashSet;
     }
 
@@ -90,7 +89,6 @@ public class Main {
         Vector<int[]> v = graph.get(i);
         for (int i1 = 0; i1 < v.size(); i1++) {
             int[] a = v.get(i1);
-            //    System.out.println(a[0]);
             if (h2.contains(a[0])) {
                 if (!arrayList.contains(a[0])) {
                     arrayList.add(a[0]);

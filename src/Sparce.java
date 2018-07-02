@@ -12,18 +12,9 @@ import java.util.*;
 public class Sparce {
 
 
-    static String address = "N100000MU.5";
+    static String address = "N1000MU.5";
     static int size = 100000;
-    //    static ArrayList<node> feature1Pair;
-//    static ArrayList<node> feature2Pair;
-//    static ArrayList<node> feature3Pair;
-//    static int[] start1;
-//    static int[] start2;
-//    static int[] start3;
-//    static int[] end1;
-//    static int[] end2;
-//    static int[] end3;
-//
+
     static SparceMateix f1;
     static SparceMateix f2;
     static SparceMateix f3;
@@ -44,40 +35,36 @@ public class Sparce {
         Main.chapGraph(graph);
         System.gc();
         int n = graph.size();
-//        float[][] featurePair = new float[3][n * (n - 1) / 2];
-//        float[][] featurePair2 = new float[3][n * (n - 1) / 2];
         f1 = new SparceMateix(n);
         f2 = new SparceMateix(n);
         f3 = new SparceMateix(n);
 
         int cnt = 0;//pair index
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                if (Main.hasArc(graph, i, j)) {
+        for (int i = 0; i < graph.size(); i++) {
+            Vector<int[]> arrayList = graph.get(i);
+            for (int i1 = 0; i1 < arrayList.size(); i1++) {
+                int des = arrayList.get(i1)[0];
+                if (i < des) {
                     //featurePair[0][cnt] = 1;
-
-                    f1.addEntry(i, j, 1);
-                }
-
-                ArrayList<Integer> arrayList = Main.comNeighbors(graph, i, j);
-                // featurePair[1][cnt] = arrayList.size();
-                if (arrayList.size() != 0) {
-                    f2.addEntry(i, j, arrayList.size());
-                    // featurePair[2][cnt] = Main.commonEdgedInSet(graph, arrayList);
-                    int a = Main.commonEdgedInSet(graph, arrayList);
-                    if (a != 0) {
-
-                        f3.addEntry(i, j, a);
+                    f1.addEntry(i, des, 1);
+                    ArrayList<Integer> arrayList2 = Main.comNeighbors(graph, i, des);
+                    if (arrayList2.size() != 0) {
+                        f2.addEntry(i, des, arrayList2.size());
+                        int a = Main.commonEdgedInSet(graph, arrayList2);
+                        if (a != 0) {
+                            f3.addEntry(i, des, a);
+                        }
                     }
                 }
-//                System.out.println("for " + (i + 1) + " , " + (j + 1));
-//                System.out.println(featurePair[0][cnt]);
-//                System.out.println(featurePair[1][cnt]);
-//                System.out.println(featurePair[2][cnt]);
-                cnt++;
             }
-
         }
+//        for (int i = 0; i < n; i++) {
+//            for (int j = i + 1; j < n; j++) {
+//
+//                cnt++;
+//            }
+//
+//        }
 
         System.out.println("CNT : " + cnt);
 
@@ -85,11 +72,6 @@ public class Sparce {
         sumF1 = 0;
         sumF2 = 0;
         sumF3 = 0;
-//        for (int i = 0; i < n * (n - 1) / 2; i++) {
-//            sumF1 += feature1Pair.;
-//            sumF2 += featurePair[1][i];
-//            sumF3 += featurePair[2][i];
-//        }
         sumF1 = (int) f1.sumAll();
         sumF2 = (int) f2.sumAll();
         sumF3 = (int) f3.sumAll();
@@ -143,12 +125,12 @@ public class Sparce {
         System.out.println("w1 : " + w1);
         System.out.println("w2 : " + w2);
 
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                System.out.print("for " + (i + 1) + " & " + (j + 1) + " : " + getP(i, j) + " , ");
-            }
-            System.out.println();
-        }
+//        for (int i = 0; i < n; i++) {
+//            for (int j = i + 1; j < n; j++) {
+//                System.out.print("for " + (i + 1) + " & " + (j + 1) + " : " + getP(i, j) + " , ");
+//            }
+//            System.out.println();
+//        }
         int[] labels = new int[n];
         int[] orders = new int[n];
         for (int i = 0; i < labels.length; i++) {
@@ -164,17 +146,22 @@ public class Sparce {
             changed = false;
             for (int counter = 0; counter < n; counter++) {
                 int i = orders[counter];
-//                if (skipThis[i]) {
-//                    continue;
-//                }
-//                skipThis[i] = true;
+
                 int[] labelScore = new int[n];
-                for (int d = 0; d < n; d++) {
-                    if (d != i) {
-                        labelScore[labels[d]] += getP(d, i);
+                Vector<int[]> vector = graph.get(i);
+                for (int i1 = 0; i1 < vector.size(); i1++) {
+                    int des = vector.get(i1)[0];
+                    if (des != i) {
+                        labelScore[labels[des]] += getP(Math.min(des, i), Math.max(des, i));
                     }
 
                 }
+//                for (int d = 0; d < n; d++) {
+//                    if (d != i) {
+//                        labelScore[labels[d]] += getP(d, i);
+//                    }
+//
+//                }
 
 
                 int maxAmount = labelScore[labels[i]];
@@ -182,13 +169,10 @@ public class Sparce {
                 //  int maxLabel = labels[i];
                 for (int i1 = 0; i1 < labelScore.length; i1++) {
                     if (labelScore[i1] > maxAmount) {
-                        // System.out.println("diff : " + (labelScore[i1] - maxAmount));
+
                         maxAmount = labelScore[i1];
                         maxLabels = new ArrayList<>();
                         maxLabels.add(i1);
-                        //  maxLabel = i1;
-                        //   changed = true;
-                        //      System.out.println("hi");
                     } else if (labelScore[i1] == maxAmount) {
                         maxLabels.add(i1);
                         //   changed = true;
@@ -198,27 +182,19 @@ public class Sparce {
                 if (!maxLabels.contains(labels[i])) {
                     old = labels[i];
                     labels[i] = maxLabels.get((int) (Math.random() * maxLabels.size()));
-                    //  labels[i] = newLabels[i];// just testing it in this way => bad thing to do
                     changed = true;
                     System.out.println(num_passes + ". label of " + (i + 1) + " goes from " + (old + 1) + " to " + (labels[i] + 1));
                 } else {
 
                     System.out.println(num_passes + ". label of " + (i + 1) + " stays " + (labels[i] + 1));
                 }
-//                for (int j = 0; j < n; j++) {
-//                    if (labels[j] == newLabels[i]) {
-//                        skipThis[j] = true;
-//                    }
-//                }
-
 
             }
-            //  labels = newLabels.clone();
+
         }
         Main.printComms(labels);
 
         Vector<Integer> v = new Vector<>();
-        //new Vector(Arrays.asList(labels));
         v.add(0, 0);
         for (int i = 0; i < labels.length; i++) {
             v.add(labels[i]);
@@ -233,10 +209,10 @@ public class Sparce {
 
 
     static double getP(int i, int j) {
-        System.out.println("p requested");
+      //  System.out.println("p requested");
 
         double r = f1.getEntry(i, j) * sumF1 + f2.getEntry(i, j) * sumF2 * w1 + f3.getEntry(i, j) * sumF3 * w2;
-        System.out.println("p given");
+      //  System.out.println("p given");
         return r;
     }
 
