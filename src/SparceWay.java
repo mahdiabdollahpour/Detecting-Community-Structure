@@ -9,10 +9,10 @@ import java.util.*;
  */
 
 
-public class Sparce {
+public class SparceWay {
 
 
-    static String address = "N1000MU.5";
+    static String address = "N100000MU.5";
     static int size = 100000;
 
     static SparceMateix f1;
@@ -29,10 +29,13 @@ public class Sparce {
     public static void main(String[] args) {
 
 
-        Vector<Vector<int[]>> graph = Main.readGraph(address + "\\network.txt", size);
+    }
+    public static void detect(String addres,int siz) {
+
+        Vector<Vector<int[]>> graph = Utils.readGraph(addres + "\\network.txt", siz);
         //     Vector<Vector<int[]>> graph = readGraph("mine.txt", 8);
 
-        Main.chapGraph(graph);
+        Utils.chapGraph(graph);
         System.gc();
         int n = graph.size();
         f1 = new SparceMateix(n);
@@ -47,10 +50,10 @@ public class Sparce {
                 if (i < des) {
                     //featurePair[0][cnt] = 1;
                     f1.addEntry(i, des, 1);
-                    ArrayList<Integer> arrayList2 = Main.comNeighbors(graph, i, des);
+                    ArrayList<Integer> arrayList2 = Utils.comNeighbors(graph, i, des);
                     if (arrayList2.size() != 0) {
                         f2.addEntry(i, des, arrayList2.size());
-                        int a = Main.commonEdgedInSet(graph, arrayList2);
+                        int a = Utils.commonEdgedInSet(graph, arrayList2);
                         if (a != 0) {
                             f3.addEntry(i, des, a);
                         }
@@ -58,16 +61,6 @@ public class Sparce {
                 }
             }
         }
-//        for (int i = 0; i < n; i++) {
-//            for (int j = i + 1; j < n; j++) {
-//
-//                cnt++;
-//            }
-//
-//        }
-
-        System.out.println("CNT : " + cnt);
-
 
         sumF1 = 0;
         sumF2 = 0;
@@ -125,12 +118,7 @@ public class Sparce {
         System.out.println("w1 : " + w1);
         System.out.println("w2 : " + w2);
 
-//        for (int i = 0; i < n; i++) {
-//            for (int j = i + 1; j < n; j++) {
-//                System.out.print("for " + (i + 1) + " & " + (j + 1) + " : " + getP(i, j) + " , ");
-//            }
-//            System.out.println();
-//        }
+
         int[] labels = new int[n];
         int[] orders = new int[n];
         for (int i = 0; i < labels.length; i++) {
@@ -141,7 +129,7 @@ public class Sparce {
         int num_passes = 0;
         boolean changed = true;
         while (changed && num_passes < allPases) {
-            orders = Main.random_shuffle(orders);
+            orders = Utils.random_shuffle(orders);
             num_passes++;
             changed = false;
             for (int counter = 0; counter < n; counter++) {
@@ -186,13 +174,13 @@ public class Sparce {
                     System.out.println(num_passes + ". label of " + (i + 1) + " goes from " + (old + 1) + " to " + (labels[i] + 1));
                 } else {
 
-                    System.out.println(num_passes + ". label of " + (i + 1) + " stays " + (labels[i] + 1));
+                 //   System.out.println(num_passes + ". label of " + (i + 1) + " stays " + (labels[i] + 1));
                 }
 
             }
 
         }
-        Main.printComms(labels);
+        NormalWay.printComms(labels);
 
         Vector<Integer> v = new Vector<>();
         v.add(0, 0);
@@ -200,7 +188,7 @@ public class Sparce {
             v.add(labels[i]);
         }
         try {
-            System.out.println(Main.NMI(v, address + "\\community.txt"));
+            System.out.println(Utils.NMI(v, addres + "\\community.txt"));
         } catch (Exception e) {
             e.printStackTrace();
         }
