@@ -8,6 +8,7 @@ public class SparceMateix {
         int s;
         int d;
         float value;
+        int temp;
 
         @Override
         public String toString() {
@@ -50,7 +51,7 @@ public class SparceMateix {
         }
     }
 
-    public float getEntry(int i, int j) {
+    public float getEntry(int i, int j,boolean temp) {
 
         int s = start[i];
         int e = end[i];
@@ -64,7 +65,12 @@ public class SparceMateix {
             int mid = (e + s) / 2;
             int v = matrix.get(mid).d;
             if (v == j) {
-                return matrix.get(mid).value;
+                if(temp) {
+                    return matrix.get(mid).temp;
+                }else {
+                    return matrix.get(mid).value;
+
+                }
             } else if (j < v) {
                 e = mid - 1;
             } else {
@@ -82,6 +88,7 @@ public class SparceMateix {
 
     public void divideby(int d) {
         for (int i = 0; i < matrix.size() && d != 0; i++) {
+            matrix.get(i).temp = (int) matrix.get(i).value;
             matrix.get(i).value = matrix.get(i).value / d;
         }
     }

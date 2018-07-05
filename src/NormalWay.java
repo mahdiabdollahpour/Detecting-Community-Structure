@@ -1,9 +1,5 @@
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+
 import java.util.*;
-import java.util.function.Consumer;
 
 /**
  * Created by ASUS on 31/05/2018.
@@ -11,39 +7,53 @@ import java.util.function.Consumer;
 
 
 public class NormalWay {
-    static String address = "N100000MU.5";
-    static int size = 100000;
-
 
     public static void main(String[] args) {
+        //    detect("N1000MU.45",1000);
+//        detect("cases\\TestCase1-N1000-k15-mu45", 1000);
+//        detect("cases\\TestCase2-N1000-k5-mu50", 1000);
+//        detect("cases\\TestCase3-N1000-k5-mu55", 1000);
+//        detect("cases\\TestCase4-N1000-k5-mu60", 1000);
+//        detect("cases\\TestCase5-N1000-k20-mu10", 1000);
+//        detect("cases\\TestCase6-N1000-k20-mu45", 1000);
+        detect("cases\\TestCase7-N1000-k20-mu50", 1000);
+        detect("cases\\TestCase8-N1000-k20-mu55", 1000);
+        detect("cases\\TestCase9-N10000-k20-mu45", 10000);
+        detect("cases\\TestCase10-N10000-k20-mu50", 10000);
+        detect("cases\\TestCase11-N50000-k20-mu45", 50000);
+        detect("cases\\TestCase12-N50000-k20-mu50", 50000);
+
 
     }
 
     public static void detect(String addres, int siz) {
 
 
-        Vector<Vector<int[]>> graph = Utils.readGraph(addres + "\\network.txt", siz);
+        Vector<Vector<int[]>> graph = MyUtils.readGraph(addres + "\\network.txt", siz);
         //     Vector<Vector<int[]>> graph = readGraph("mine.txt", 8);
 
-        Utils.chapGraph(graph);
-        System.gc();
+        MyUtils.chapGraph(graph);
+        //  System.gc();
+
         int n = graph.size();
+        long l = Long.MAX_VALUE;
         float[][] featurePair = new float[3][n * (n - 1) / 2];
         float[][] featurePair2 = new float[3][n * (n - 1) / 2];
         int cnt = 0;//pair index
         for (int i = 0; i < n; i++) {
             for (int j = i + 1; j < n; j++) {
-                if (Utils.hasArc(graph, i, j)) {
+                if (MyUtils.hasArc(graph, i, j)) {
                     featurePair[0][cnt] = 1;
                 }
 
-                ArrayList<Integer> arrayList = Utils.comNeighbors(graph, i, j);
+                ArrayList<Integer> arrayList = MyUtils.comNeighbors(graph, i, j);
                 featurePair[1][cnt] = arrayList.size();
-                featurePair[2][cnt] = Utils.commonEdgedInSet(graph, arrayList);
-                System.out.println("for " + (i + 1) + " , " + (j + 1));
-                System.out.println(featurePair[0][cnt]);
-                System.out.println(featurePair[1][cnt]);
-                System.out.println(featurePair[2][cnt]);
+                featurePair[2][cnt] = MyUtils.commonEdgedInSet(graph, arrayList);
+                 System.out.println("for " + (i + 1) + " , " + (j + 1));
+                 System.out.println(featurePair[0][cnt]);
+                 System.out.println(featurePair[1][cnt]);
+                 System.out.println(featurePair[2][cnt]);
+
                 cnt++;
             }
         }
@@ -53,14 +63,23 @@ public class NormalWay {
         int sumF1 = 0;
         int sumF2 = 0;
         int sumF3 = 0;
+
         for (int i = 0; i < n * (n - 1) / 2; i++) {
             sumF1 += featurePair[0][i];
             sumF2 += featurePair[1][i];
             sumF3 += featurePair[2][i];
         }
+        if(sumF1==0 && sumF2 ==0 && sumF3==0){
+            System.out.println("shit");
+            System.exit(0);
+        }
         for (int i = 0; i < n * (n - 1) / 2; i++) {
-            featurePair2[0][i] = featurePair[0][i] / sumF1;
-            featurePair2[1][i] = featurePair[1][i] / sumF2;
+            if (sumF1 != 0) {
+                featurePair2[0][i] = featurePair[0][i] / sumF1;
+            }
+            if (sumF2 != 0) {
+                featurePair2[1][i] = featurePair[1][i] / sumF2;
+            }
             if (sumF3 != 0) {
                 featurePair2[2][i] = featurePair[2][i] / sumF3;
             }
@@ -116,14 +135,14 @@ public class NormalWay {
         System.out.println("FE 3 : " + FE3);
         double w1;
         if (FE2 == 0) {
-            w1 = Math.abs(FE1) * (100000 / FE1);
+            w1 = Math.abs(FE1) * (100000);
         } else {
 
             w1 = FE1 / FE2;
         }
         double w2;
         if (FE3 == 0) {
-            w2 = Math.abs(FE1) * (100000 / FE1);
+            w2 = Math.abs(FE1) * (100000);
         } else {
             w2 = FE1 / FE3;
         }
@@ -148,12 +167,12 @@ public class NormalWay {
             }
         }
         System.out.println("CNT 2 : " + cnt2);
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                System.out.print("for " + (i + 1) + " & " + (j + 1) + " : " + pw[i][j] + " , ");
-            }
-            System.out.println();
-        }
+//        for (int i = 0; i < n; i++) {
+//            for (int j = i + 1; j < n; j++) {
+//                System.out.print("for " + (i + 1) + " & " + (j + 1) + " : " + pw[i][j] + " , ");
+//            }
+//            System.out.println();
+//        }
         int[] labels = new int[n];
         int[] orders = new int[n];
         for (int i = 0; i < labels.length; i++) {
@@ -163,8 +182,9 @@ public class NormalWay {
         final int allPases = 150;
         int num_passes = 0;
         boolean changed = true;
+        long begin = System.currentTimeMillis();
         while (changed && num_passes < allPases) {
-            orders = Utils.random_shuffle(orders);
+            orders = MyUtils.random_shuffle(orders);
             num_passes++;
             changed = false;
             //    int[] newLabels = new int[n];
@@ -175,7 +195,7 @@ public class NormalWay {
 //                    continue;
 //                }
 //                skipThis[i] = true;
-                int[] labelScore = new int[n];
+                double[] labelScore = new double[n];
                 for (int d = 0; d < n; d++) {
                     if (d != i) {
                         labelScore[labels[d]] += pw[d][i];
@@ -184,7 +204,7 @@ public class NormalWay {
                 }
 
 
-                int maxAmount = labelScore[labels[i]];
+                double maxAmount = labelScore[labels[i]];
                 ArrayList<Integer> maxLabels = new ArrayList<>();
                 //  int maxLabel = labels[i];
                 for (int i1 = 0; i1 < labelScore.length; i1++) {
@@ -222,6 +242,7 @@ public class NormalWay {
             }
             //  labels = newLabels.clone();
         }
+        long end = System.currentTimeMillis();
         printComms(labels);
 
         Vector<Integer> v = new Vector<>();
@@ -231,7 +252,12 @@ public class NormalWay {
             v.add(labels[i]);
         }
         try {
-            System.out.println(Utils.NMI(v, addres + "\\community.txt"));
+            float nmi = MyUtils.NMI(v, addres + "\\community.txt");
+
+            System.out.println(nmi);
+            MyUtils.report(addres, "LPA_CNP_E_(not_sparce)", nmi, end - begin);
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
