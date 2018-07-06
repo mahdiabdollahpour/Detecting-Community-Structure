@@ -5,15 +5,12 @@
 import java.util.*;
 
 
-public class SparceWay {
+public class SparceWayFAST {
 
 
-//    static String address = "N100000MU.5";
-//    static int size = 100000;
-
-    static SparceMateix f1;
-    static SparceMateix f2;
-    static SparceMateix f3;
+    static SparceMatrix f1;
+    static SparceMatrix f2;
+    static SparceMatrix f3;
 
     static int sumF1;
     static int sumF2;
@@ -23,12 +20,12 @@ public class SparceWay {
 
 
     public static void main(String[] args) {
-        detect("N1000MU.5", 1000, true);
-//        detect("cases\\TestCase1-N1000-k15-mu45", 1000, false);
+
+        detect("cases\\TestCase2-N1000-k5-mu50", 1000);
 
     }
 
-    public static void detect(String addres, int siz, boolean toofast) {
+    public static void detect(String addres, int siz) {
 
         Vector<Vector<int[]>> graph = MyUtils.readGraph(addres + "\\network.txt", siz);
         //     Vector<Vector<int[]>> graph = readGraph("mine.txt", 8);
@@ -36,56 +33,32 @@ public class SparceWay {
         MyUtils.chapGraph(graph);
         System.gc();
         int n = graph.size();
-        f1 = new SparceMateix(n);
-        f2 = new SparceMateix(n);
-        f3 = new SparceMateix(n);
+        f1 = new SparceMatrix(n);
+        f2 = new SparceMatrix(n);
+        f3 = new SparceMatrix(n);
 
         int cnt = 0;//pair index
-        if (toofast) {
-            for (int i = 0; i < graph.size(); i++) {
-                Vector<int[]> arrayList = graph.get(i);
-                for (int i1 = 0; i1 < arrayList.size(); i1++) {
-                    int des = arrayList.get(i1)[0];
-                    if (i < des) {
-                        //featurePair[0][cnt] = 1;
-                        f1.addEntry(i, des, 1);
-                        ArrayList<Integer> arrayList2 = MyUtils.comNeighbors(graph, i, des);
-                        if (arrayList2.size() != 0) {
-                            f2.addEntry(i, des, arrayList2.size());
-                            int a = MyUtils.commonEdgedInSet(graph, arrayList2);
-                            if (a != 0) {
-                                f3.addEntry(i, des, a);
-                            }
-                        }
-                    }
 
-                }
-            }
-        } else {
-
-            for (int i = 0; i < n; i++) {
-                for (int j = i + 1; j < n; j++) {
-
-                    if (MyUtils.hasArc(graph, i, j)) {
-                        //featurePair[0][cnt] = 1;
-
-                        f1.addEntry(i, j, 1);
-                    }
-
+        for (int i = 0; i < graph.size(); i++) {
+            Vector<int[]> arrayList = graph.get(i);
+            for (int i1 = 0; i1 < arrayList.size(); i1++) {
+                int des = arrayList.get(i1)[0];
+                if (i < des) {
                     //featurePair[0][cnt] = 1;
-
-                    ArrayList<Integer> arrayList2 = MyUtils.comNeighbors(graph, i, j);
+                    f1.addEntry(i, des, 1);
+                    ArrayList<Integer> arrayList2 = MyUtils.comNeighbors(graph, i, des);
                     if (arrayList2.size() != 0) {
-                        f2.addEntry(i, j, arrayList2.size());
+                        f2.addEntry(i, des, arrayList2.size());
                         int a = MyUtils.commonEdgedInSet(graph, arrayList2);
                         if (a != 0) {
-                            f3.addEntry(i, j, a);
+                            f3.addEntry(i, des, a);
                         }
                     }
                 }
-            }
 
+            }
         }
+
 
 //        sumF1 = 0;
 //        sumF2 = 0;
@@ -162,21 +135,12 @@ public class SparceWay {
                 int i = orders[counter];
 
                 double[] labelScore = new double[n];
-                if (toofast) {
-                    Vector<int[]> vector = graph.get(i);
-                    for (int i1 = 0; i1 < vector.size(); i1++) {
-                        int des = vector.get(i1)[0];
-                        if (des != i) {
-                            labelScore[labels[des]] += getP(Math.min(des, i), Math.max(des, i));
-                        }
 
-                    }
-                } else {
-                    for (int d = 0; d < n; d++) {
-                        if (d != i) {
-                            labelScore[labels[d]] += getP(Math.min(d, i), Math.max(d, i));
-                        }
-
+                Vector<int[]> vector = graph.get(i);
+                for (int i1 = 0; i1 < vector.size(); i1++) {
+                    int des = vector.get(i1)[0];
+                    if (des != i) {
+                        labelScore[labels[des]] += getP(Math.min(des, i), Math.max(des, i));
                     }
 
                 }
@@ -223,7 +187,7 @@ public class SparceWay {
             float nmi = MyUtils.NMI(v, addres + "\\community.txt");
 
             System.out.println(nmi);
-            MyUtils.report(addres, "SparceWay_", nmi, end - begin);
+            MyUtils.report(addres, "SparceWay_FAST", nmi, end - begin);
         } catch (Exception e) {
             e.printStackTrace();
         }

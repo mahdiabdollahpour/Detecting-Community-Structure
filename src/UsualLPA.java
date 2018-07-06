@@ -6,8 +6,21 @@ import java.util.Vector;
  */
 public class UsualLPA {
     public static void main(String[] args) {
-        //  detect("N100000MU.5", 100000);
-        detect("cases\\TestCase1-N1000-k15-mu45", 1000);
+//          detect("N100000MU.5", 100000);
+//        detect("cases\\TestCase1-N1000-k15-mu45", 1000);
+//        detect("cases\\TestCase2-N1000-k5-mu50", 1000);
+//        detect("cases\\TestCase4-N1000-k5-mu60", 1000);
+//        detect("cases\\TestCase5-N1000-k20-mu10", 1000);
+//        detect("cases\\TestCase6-N1000-k20-mu45", 1000);
+//        detect("cases\\TestCase7-N1000-k20-mu50", 1000);
+//        detect("cases\\TestCase8-N1000-k20-mu55", 1000);
+//        detect("cases\\TestCase9-N10000-k20-mu45", 10000);
+//        detect("cases\\TestCase10-N10000-k20-mu50", 10000);
+//        detect("cases\\TestCase11-N50000-k20-mu45", 50000);
+//        detect("cases\\TestCase12-N50000-k20-mu50", 50000);
+        detect("cases\\TestCase13-N100000-k20-mu45", 100000);
+//          detect("cases\\TestCase14-N100000-k20-mu50", 100000);
+
     }
 
     public static void detect(String addres, int siz) {

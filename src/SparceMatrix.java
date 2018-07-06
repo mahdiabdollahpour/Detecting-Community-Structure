@@ -3,7 +3,7 @@ import java.util.ArrayList;
 /**
  * Created by ASUS on 01/07/2018.
  */
-public class SparceMateix {
+public class SparceMatrix {
     static class node {
         int s;
         int d;
@@ -31,7 +31,7 @@ public class SparceMateix {
     int[] start;
     int[] end;
 
-    public SparceMateix(int n) {
+    public SparceMatrix(int n) {
         this.n = n;
         matrix = new ArrayList<>();
         start = new int[n];

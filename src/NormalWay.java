@@ -9,19 +9,19 @@ import java.util.*;
 public class NormalWay {
 
     public static void main(String[] args) {
-        //    detect("N1000MU.45",1000);
-//        detect("cases\\TestCase1-N1000-k15-mu45", 1000);
+//            detect("N1000MU0.1",1000);
+        detect("cases\\TestCase1-N1000-k15-mu45", 1000);
 //        detect("cases\\TestCase2-N1000-k5-mu50", 1000);
 //        detect("cases\\TestCase3-N1000-k5-mu55", 1000);
 //        detect("cases\\TestCase4-N1000-k5-mu60", 1000);
 //        detect("cases\\TestCase5-N1000-k20-mu10", 1000);
 //        detect("cases\\TestCase6-N1000-k20-mu45", 1000);
-        detect("cases\\TestCase7-N1000-k20-mu50", 1000);
-        detect("cases\\TestCase8-N1000-k20-mu55", 1000);
-        detect("cases\\TestCase9-N10000-k20-mu45", 10000);
-        detect("cases\\TestCase10-N10000-k20-mu50", 10000);
-        detect("cases\\TestCase11-N50000-k20-mu45", 50000);
-        detect("cases\\TestCase12-N50000-k20-mu50", 50000);
+//        detect("cases\\TestCase7-N1000-k20-mu50", 1000);
+//        detect("cases\\TestCase8-N1000-k20-mu55", 1000);
+//        detect("cases\\TestCase9-N10000-k20-mu45", 10000);
+//        detect("cases\\TestCase10-N10000-k20-mu50", 10000);
+//        detect("cases\\TestCase11-N50000-k20-mu45", 50000);
+//        detect("cases\\TestCase12-N50000-k20-mu50", 50000);
 
 
     }
@@ -31,12 +31,9 @@ public class NormalWay {
 
         Vector<Vector<int[]>> graph = MyUtils.readGraph(addres + "\\network.txt", siz);
         //     Vector<Vector<int[]>> graph = readGraph("mine.txt", 8);
-
         MyUtils.chapGraph(graph);
-        //  System.gc();
-
+        System.gc();
         int n = graph.size();
-        long l = Long.MAX_VALUE;
         float[][] featurePair = new float[3][n * (n - 1) / 2];
         float[][] featurePair2 = new float[3][n * (n - 1) / 2];
         int cnt = 0;//pair index
@@ -47,13 +44,15 @@ public class NormalWay {
                 }
 
                 ArrayList<Integer> arrayList = MyUtils.comNeighbors(graph, i, j);
-                featurePair[1][cnt] = arrayList.size();
-                featurePair[2][cnt] = MyUtils.commonEdgedInSet(graph, arrayList);
-                 System.out.println("for " + (i + 1) + " , " + (j + 1));
-                 System.out.println(featurePair[0][cnt]);
-                 System.out.println(featurePair[1][cnt]);
-                 System.out.println(featurePair[2][cnt]);
-
+                int a = arrayList.size();
+                featurePair[1][cnt] = a;
+                if (a > 1) {
+                    featurePair[2][cnt] = MyUtils.commonEdgedInSet(graph, arrayList);
+                }
+                System.out.println("for " + (i + 1) + " , " + (j + 1));
+                System.out.println(featurePair[0][cnt]);
+                System.out.println(featurePair[1][cnt]);
+                System.out.println(featurePair[2][cnt]);
                 cnt++;
             }
         }
@@ -63,23 +62,14 @@ public class NormalWay {
         int sumF1 = 0;
         int sumF2 = 0;
         int sumF3 = 0;
-
         for (int i = 0; i < n * (n - 1) / 2; i++) {
             sumF1 += featurePair[0][i];
             sumF2 += featurePair[1][i];
             sumF3 += featurePair[2][i];
         }
-        if(sumF1==0 && sumF2 ==0 && sumF3==0){
-            System.out.println("shit");
-            System.exit(0);
-        }
         for (int i = 0; i < n * (n - 1) / 2; i++) {
-            if (sumF1 != 0) {
-                featurePair2[0][i] = featurePair[0][i] / sumF1;
-            }
-            if (sumF2 != 0) {
-                featurePair2[1][i] = featurePair[1][i] / sumF2;
-            }
+            featurePair2[0][i] = featurePair[0][i] / sumF1;
+            featurePair2[1][i] = featurePair[1][i] / sumF2;
             if (sumF3 != 0) {
                 featurePair2[2][i] = featurePair[2][i] / sumF3;
             }
@@ -135,14 +125,14 @@ public class NormalWay {
         System.out.println("FE 3 : " + FE3);
         double w1;
         if (FE2 == 0) {
-            w1 = Math.abs(FE1) * (100000);
+            w1 = Math.abs(FE1) * (100000 / FE1);
         } else {
 
             w1 = FE1 / FE2;
         }
         double w2;
         if (FE3 == 0) {
-            w2 = Math.abs(FE1) * (100000);
+            w2 = Math.abs(FE1) * (100000 / FE1);
         } else {
             w2 = FE1 / FE3;
         }
@@ -167,12 +157,12 @@ public class NormalWay {
             }
         }
         System.out.println("CNT 2 : " + cnt2);
-//        for (int i = 0; i < n; i++) {
-//            for (int j = i + 1; j < n; j++) {
-//                System.out.print("for " + (i + 1) + " & " + (j + 1) + " : " + pw[i][j] + " , ");
-//            }
-//            System.out.println();
-//        }
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                System.out.print("for " + (i + 1) + " & " + (j + 1) + " : " + pw[i][j] + " , ");
+            }
+            System.out.println();
+        }
         int[] labels = new int[n];
         int[] orders = new int[n];
         for (int i = 0; i < labels.length; i++) {
@@ -195,7 +185,7 @@ public class NormalWay {
 //                    continue;
 //                }
 //                skipThis[i] = true;
-                double[] labelScore = new double[n];
+                int[] labelScore = new int[n];
                 for (int d = 0; d < n; d++) {
                     if (d != i) {
                         labelScore[labels[d]] += pw[d][i];
@@ -204,7 +194,7 @@ public class NormalWay {
                 }
 
 
-                double maxAmount = labelScore[labels[i]];
+                int maxAmount = labelScore[labels[i]];
                 ArrayList<Integer> maxLabels = new ArrayList<>();
                 //  int maxLabel = labels[i];
                 for (int i1 = 0; i1 < labelScore.length; i1++) {
