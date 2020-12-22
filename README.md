@@ -1,4 +1,7 @@
 # Detecting community structure 
+
+## [Papers with Code](https://paperswithcode.com/paper/detecting-community-structure-using-label) 
+
 ## using label propagation with weighted coherent neighborhood propinquity
 
 ## Abstract
